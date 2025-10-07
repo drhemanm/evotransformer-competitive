@@ -85,3 +85,41 @@ At 70.35% accuracy:
 - p < 0.001 (highly significant)
 
 ## Architecture Details
+Input → RoBERTa-base (125M, top 4 unfrozen)
+↓
+Evolved Layer 1 (12 heads, FFN 2048)
+↓
+Evolved Layer 2 (12 heads, FFN 2048)
+↓
+Classification Head (768 → 384 → 1)
+↓
+Output Logits
+
+## Hardware & Runtime
+
+- **GPU:** Tesla T4 (16GB)
+- **Training time:** ~7.5 hours (9 epochs × 50 min/epoch)
+- **Framework:** PyTorch 2.0 + HuggingFace Transformers
+- **Batch size:** 32
+- **Learning rate:** 2e-5 (RoBERTa), 2e-4 (evolved layers)
+
+## Next Steps
+
+To push toward SOTA (79%):
+
+1. **RoBERTa-Large** - Expected +5-7% (but 355M params)
+2. **Multi-task learning** - Add HellaSwag, COPA (+3-4%)
+3. **Ensemble** - Top 5 models (+1-2%)
+4. **External knowledge** - ConceptNet integration (+2-3%)
+
+**Predicted ceiling:** 78-80% with RoBERTa-Large + multi-task + ensemble
+
+## Conclusion
+
+70.35% demonstrates that:
+- Evolutionary search scales with stronger base models
+- Strategic unfreezing enables task adaptation
+- Data augmentation + contrastive learning boost performance
+- Competitive results achievable with moderate compute
+
+This validates the EvoTransformer approach for efficient, adaptive neural architecture search.
