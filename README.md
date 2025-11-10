@@ -45,3 +45,27 @@ First genome results (40M trainable parameters):
 5. Use 4x augmented data (swapping, paraphrasing)
 6. Early stopping with patience=4
 
+## 📊 Customer Dashboard
+
+An interactive web dashboard is available to showcase performance metrics, competitive analysis, and architectural details.
+
+### Quick Start
+
+```bash
+cd dashboard
+./start_dashboard.sh  # Linux/Mac
+# or
+start_dashboard.bat   # Windows
+```
+
+Then open http://localhost:5000 in your browser.
+
+### Features
+- **Real-time Metrics**: Live performance indicators with animated updates
+- **Interactive Charts**: Training progress, model comparison, feature impact
+- **REST API**: Full API for integration with external systems
+- **WebSocket Support**: Real-time updates during training
+- **Responsive Design**: Works on desktop, tablet, and mobile
+
+See [dashboard/README.md](dashboard/README.md) for complete documentation.
+
