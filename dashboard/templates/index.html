@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvoTransformer | Customer Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect width="40" height="40" rx="8" fill="url(#gradient1)"/>
+                            <path d="M20 10L28 16L20 22L12 16L20 10Z" fill="white" opacity="0.9"/>
+                            <path d="M20 18L28 24L20 30L12 24L20 18Z" fill="white" opacity="0.6"/>
+                            <defs>
+                                <linearGradient id="gradient1" x1="0" y1="0" x2="40" y2="40">
+                                    <stop offset="0%" stop-color="#667eea"/>
+                                    <stop offset="100%" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="title-section">
+                        <h1>EvoTransformer</h1>
+                        <p class="subtitle">Competitive Neural Architecture Search</p>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Live</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Overview Cards -->
+            <section class="overview-section">
+                <div class="section-header">
+                    <h2>Performance Overview</h2>
+                    <span class="last-updated" id="lastUpdated">Updated just now</span>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card primary">
+                        <div class="metric-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="metric-content">
+                            <p class="metric-label">Current Accuracy</p>
+                            <h3 class="metric-value" id="currentAccuracy">70.35%</h3>
+                            <p class="metric-change positive" id="accuracyChange">+7.29% vs baseline</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="metric-content">
+                            <p class="metric-label">Training Time</p>
+                            <h3 class="metric-value" id="trainingTime">7.5 hrs</h3>
+                            <p class="metric-change neutral">Tesla T4 GPU</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <div class="metric-content">
+                            <p class="metric-label">Model Size</p>
+                            <h3 class="metric-value" id="modelSize">40.6M</h3>
+                            <p class="metric-change neutral">Parameters</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="metric-content">
+                            <p class="metric-label">Confidence</p>
+                            <h3 class="metric-value" id="confidence">95%</h3>
+                            <p class="metric-change neutral">CI: 68.2-72.5%</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Training Progress Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Training Progress</h3>
+                            <p class="chart-subtitle">Validation accuracy by epoch</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trainingChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Model Comparison Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Model Comparison</h3>
+                            <p class="chart-subtitle">Accuracy vs model size</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feature Impact Section -->
+            <section class="feature-section">
+                <div class="section-header">
+                    <h2>Feature Impact Analysis</h2>
+                    <p class="section-subtitle">Contribution of each enhancement</p>
+                </div>
+                <div class="feature-chart-card">
+                    <canvas id="featureImpactChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Architecture & Resources Section -->
+            <section class="details-section">
+                <div class="details-grid">
+                    <!-- Architecture Details -->
+                    <div class="details-card">
+                        <h3>Architecture</h3>
+                        <div class="details-list">
+                            <div class="detail-item">
+                                <span class="detail-label">Base Model</span>
+                                <span class="detail-value" id="baseModel">RoBERTa-base</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Evolved Layers</span>
+                                <span class="detail-value" id="evolvedLayers">2</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Attention Heads</span>
+                                <span class="detail-value" id="attentionHeads">12</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Hidden Dimension</span>
+                                <span class="detail-value" id="hiddenDim">768</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">FFN Dimension</span>
+                                <span class="detail-value" id="ffnDim">2048</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Dropout Rate</span>
+                                <span class="detail-value" id="dropout">0.1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource Utilization -->
+                    <div class="details-card">
+                        <h3>Resource Utilization</h3>
+                        <div class="details-list">
+                            <div class="detail-item">
+                                <span class="detail-label">GPU</span>
+                                <span class="detail-value" id="gpu">Tesla T4</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">VRAM</span>
+                                <span class="detail-value" id="vram">16 GB</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Batch Size</span>
+                                <span class="detail-value" id="batchSize">32</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">LR (RoBERTa)</span>
+                                <span class="detail-value" id="lrRoberta">2e-5</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">LR (Evolved)</span>
+                                <span class="detail-value" id="lrEvolved">2e-4</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Framework</span>
+                                <span class="detail-value" id="framework">PyTorch 2.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Roadmap Section -->
+            <section class="roadmap-section">
+                <div class="section-header">
+                    <h2>Product Roadmap</h2>
+                    <p class="section-subtitle">Planned enhancements to reach 79% SOTA</p>
+                </div>
+                <div class="roadmap-grid" id="roadmapGrid">
+                    <!-- Roadmap items will be injected here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>&copy; 2025 EvoTransformer | MIT License | <a href="https://github.com" target="_blank">View on GitHub</a></p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
