@@ -6,7 +6,7 @@ Competitive implementation of EvoTransformer achieving **70.35% validation accur
 
 | Configuration | Val Acc | Improvement |
 |---------------|---------|-------------|
-| **Competitive (RoBERTa + Enhancements)** | **78.32%** | **+14%** |
+| **Competitive (RoBERTa + Enhancements)** | **70.35%** | **+14%** |
 | Original (Frozen BERT) | 63.06% | Baseline |
 | Static Baseline | 53.43% | -9.63% |
 
